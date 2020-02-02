@@ -51,7 +51,10 @@ fn main() {
         // * riscv - the rust-lang/rust distribution container doesn't have a C
         //   compiler nor is cc-rs ready for compilation to riscv (at this
         //   time). This can probably be removed in the future
-        if !target.contains("wasm32") && !target.contains("nvptx") && !(target.starts_with("riscv") && target.contains("-none-")) {
+        if !target.contains("wasm32")
+            && !target.contains("nvptx")
+            && !(target.starts_with("riscv") && target.contains("-none-"))
+        {
             #[cfg(feature = "c")]
             c::compile(&llvm_target, &target);
         }
@@ -173,6 +176,7 @@ mod c {
 
         let mut sources = Sources::new();
         sources.extend(&[
+            ("__addtf3", "addtf3.c"),
             ("__absvdi2", "absvdi2.c"),
             ("__absvsi2", "absvsi2.c"),
             ("__addvdi3", "addvdi3.c"),
@@ -184,6 +188,9 @@ mod c {
             ("__ctzdi2", "ctzdi2.c"),
             ("__ctzsi2", "ctzsi2.c"),
             ("__int_util", "int_util.c"),
+            ("__muldc3", "muldc3.c"),
+            ("__mulsc3", "mulsc3.c"),
+            ("__multf3", "multf3.c"),
             ("__mulvdi3", "mulvdi3.c"),
             ("__mulvsi3", "mulvsi3.c"),
             ("__negdi2", "negdi2.c"),
@@ -193,6 +200,8 @@ mod c {
             ("__paritysi2", "paritysi2.c"),
             ("__popcountdi2", "popcountdi2.c"),
             ("__popcountsi2", "popcountsi2.c"),
+            ("__powixf2", "powixf2.c"),
+            ("__subtf3", "subtf3.c"),
             ("__subvdi3", "subvdi3.c"),
             ("__subvsi3", "subvsi3.c"),
             ("__ucmpdi2", "ucmpdi2.c"),
@@ -397,7 +406,7 @@ mod c {
             ]);
         }
 
-        if target_arch == "aarch64" && consider_float_intrinsics {
+        if (target_arch == "aarch64" && consider_float_intrinsics) || target_arch == "riscv64" {
             sources.extend(&[
                 ("__comparetf2", "comparetf2.c"),
                 ("__extenddftf2", "extenddftf2.c"),
